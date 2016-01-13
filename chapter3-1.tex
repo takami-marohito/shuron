@@ -96,14 +96,38 @@ k4 = {\bf f} ({\bf X} + k3\Delta t , t-\Delta t)
 k1からk4を用いて、ステップ時間前の座標は次式のようになる。
 
 \begin{eqnarray}
+\label{eq:3-25}
 {\bf X}^{(t-1)} = {\bf X}^{t} - \frac{\Delta t}{6} (k1 + 2k2 + 2k3 + k4)
 \end{eqnarray}
 
-このようにして遡った地点を一日ごとにサンプリングする。
+本研究ではより正確に流跡線計算を行うために、8時間ごと（一日に3回）にルンゲクッタ法で流跡線計算を行う。
+この場合、式\ref{eq:3-22}、式\ref{eq:3-23}、式\ref{eq:3-24}、式\ref{eq:3-25}での$\Delta t$は$\frac{1}{3}$になり、これを3回計算することで一日分の流跡線が計算できる。
+
+このようにして計算した流跡線上で海洋環境変数を一日ごとにサンプリングする。
 サンプリングは線形補間で行う。
-\if0
-線形補間はある地点(x,y,z)の補間を式-をつかって周りの8点で行う。
-\fi
+今回は3次元の座標$(x,y,z)$での海洋環境変数値$P(x,y,z)$を線形補間するので近傍の8点$(X_{i},Y_{i},Z_{i})$，$(X_{i+1},Y_{i},Z_{i})$，$(X_{i},Y_{i+1},Z_{i})$，
+$(X_{i+1},Y_{i+1},Z_{i})$，$(X_{i},Y_{i},Z_{i+1})，
+(X_{i+1},Y_{i},Z_{i+1})，(X_{i},Y_{i+1},Z_{i+1})，
+(X_{i+1},Y_{i+1},Z_{i+1})$とそこでの海洋環境変数値$P(X,Y,Z)$を使って次の式で補間できる。
+
+\begin{eqnarray}
+\label{eq:3-99}
+P_{y-z-} = P(X_{i},Y_{i},Z_{i}) + \frac{x-X_{i}}{X_{i+1}-X_{i}} \left( P(X_{i+1},Y_{i},Z_{i}) - P(X_{i},Y_{i},Z_{i})\right) \nonumber \\
+P_{y+z-} = P(X_{i},Y_{i+1},Z_{i}) + \frac{x-X_{i}}{X_{i+1}-X_{i}} \left( P(X_{i+1},Y_{i+1},Z_{i}) - P(X_{i},Y_{i+1},Z_{i}) \right) \nonumber \\
+P_{z-} = P_{y-z-} + \frac{y-Y_{i}}{Y_{i+1}-Y_{i}} \left( P_{y+z-} - P_{y-z-} \right) \nonumber \\
+P_{y-z+} = P(X_{i},Y_{i},Z_{i+1}) + \frac{x-X_{i}}{X_{i+1}-X_{i}} \left( P(X_{i+1},Y_{i},Z_{i+1}) - P(X_{i},Y_{i},Z_{i+1})\right) \nonumber \\
+P_{y+z+} = P(X_{i},Y_{i+1},Z_{i+1}) + \frac{x-X_{i}}{X_{i+1}-X_{i}} \left( P(X_{i+1},Y_{i+1},Z_{i+1}) - P(X_{i},Y_{i+1},Z_{i+1}) \right) \nonumber \\
+P_{z+} = P_{y-z+} + \frac{y-Y_{i}}{Y_{i+1}-Y_{i}} \left( P_{y+z+} - P_{y-z+} \right) \nonumber \\
+P(x,y,z) = P_{z-} + \frac{z-Z_{i}}{Z_{i+1}-Z_{i}} \left( P_{z+} - P_{z-} \right) \nonumber 
+\end{eqnarray}
+
+ルンゲクッタ法で補間を行う場合はさらに時間の補間も必要となる。
+これも先の式と同様にして次式で計算できる。
+
+\begin{eqnarray}
+P(x,y,z,t) = P(x,y,z,T_{i}) + \frac{t-T_{i}}{T_{i+1}-T_{i}} \left( P(x,y,z,T_{i+1}) - P(x,y,z,T_{i}) \right)
+\end{eqnarray}
+
 \if0
 MOVEデータの仕様を説明して、何回データをダウンロードするかとか書ける
 \fi
