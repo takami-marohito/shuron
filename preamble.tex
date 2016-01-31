@@ -1,0 +1,7 @@
+\makeatletter
+\count@\z@
+\@whilenum\count@<64\do{%
+   \advance\count@\@ne
+   \expandafter\newinsert\csname bx@\romannumeral\count@\endcsname
+   \@cons\@freelist{\csname bx@\romannumeral\count@\endcsname}}
+\makeatother
